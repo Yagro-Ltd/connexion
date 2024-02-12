@@ -10,7 +10,8 @@ from types import FunctionType  # NOQA
 
 import flask
 import werkzeug.exceptions
-from flask import json, signals
+from flask import signals
+from ..backports import JSONEncoder
 
 from ..apis.flask_api import FlaskApi
 from ..exceptions import ProblemException
@@ -150,7 +151,7 @@ class FlaskApp(AbstractApp):
             raise Exception(f'Server {self.server} not recognized')
 
 
-class FlaskJSONEncoder(json.JSONEncoder):
+class FlaskJSONEncoder(JSONEncoder):
     def default(self, o):
         if isinstance(o, datetime.datetime):
             if o.tzinfo:
@@ -167,7 +168,7 @@ class FlaskJSONEncoder(json.JSONEncoder):
         if isinstance(o, Decimal):
             return float(o)
 
-        return json.JSONEncoder.default(self, o)
+        return JSONEncoder.default(self, o)
 
 
 class NumberConverter(werkzeug.routing.BaseConverter):
